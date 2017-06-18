@@ -26,6 +26,7 @@ int main(int argc, char const *argv[])
 	int sample_size, n, i, j, no_of_experiments;
 	double ** matrix_a, ** matrix_b, ** matrix_c;
 	double elapsed_time, * all_elapsed_times;
+	clock_t start, end;
 
 	if(argc < ARG_COUNT){
 		printf("Invalid arguments. Correct form: ./<executable name> <sample_size>\n");
@@ -51,9 +52,9 @@ int main(int argc, char const *argv[])
 		populate_matrix_randomly(matrix_b, n);
 
 		for(i=0; i < sample_size; i++){
-			clock_t start = clock();
+			start = clock();
 			matrix_c = multiply(matrix_a, matrix_b, n);
-			clock_t end = clock();
+			end = clock();
 
 			elapsed_time += (end - start)/(double)CLOCKS_PER_SEC;
 		}
@@ -69,7 +70,9 @@ int main(int argc, char const *argv[])
 
 	}
 
+	printf("All experiments completed\n");
 	save_output_to_file("serial_output.csv", all_elapsed_times, no_of_experiments);
+	printf("Time statistics were saved to serial_output.csv\n");
 
 	return 0;
 }

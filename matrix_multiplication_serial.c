@@ -8,6 +8,7 @@
 #define MATRIX_SIZE_INITIAL 200
 #define MATRIX_SIZE_MAX 2000
 #define MATRIX_SIZE_STEP 200
+#define NO_OF_EXPERIMENTS (MATRIX_SIZE_MAX - MATRIX_SIZE_INITIAL)/MATRIX_SIZE_STEP + 1
 
 double ** init_matrix(int n);
 
@@ -23,10 +24,10 @@ void save_output_to_file(char * file_name, double * data, int no_of_items_in_dat
 
 int main(int argc, char const *argv[])
 {
-	int sample_size, n, i, j, no_of_experiments;
-	double ** matrix_a, ** matrix_b, ** matrix_c;
+	int sample_size,n, i, j;
 	double elapsed_time, * all_elapsed_times;
 	clock_t start, end;
+	double ** matrix_a, ** matrix_b, ** matrix_c;
 
 	if(argc < ARG_COUNT){
 		printf("Invalid arguments. Correct form: ./<executable name> <sample_size>\n");
@@ -34,10 +35,9 @@ int main(int argc, char const *argv[])
 	}
 
 	// Read the matrix size from args
-	no_of_experiments = (MATRIX_SIZE_MAX - MATRIX_SIZE_INITIAL)/MATRIX_SIZE_STEP + 1;
 	j = 0;
 	sscanf(argv[1], "%d", &sample_size);
-	all_elapsed_times = (double *)malloc(sizeof(double) * no_of_experiments);
+	all_elapsed_times = (double *)malloc(sizeof(double) * NO_OF_EXPERIMENTS);
 
 	for(n = MATRIX_SIZE_INITIAL; n <= MATRIX_SIZE_MAX; n += MATRIX_SIZE_STEP){
 		printf("Running experiment for matrix size %d\n", n);
@@ -66,12 +66,13 @@ int main(int argc, char const *argv[])
 		clean_matrix_memory(matrix_b, n);
 		clean_matrix_memory(matrix_c, n);
 
-		printf("Experiment for matrix size %d completed\n\n", n);
+		printf("Experiment for matrix size %d completed\n", n);
+		printf("Average time: %.3f\n\n", elapsed_time);
 
 	}
 
 	printf("All experiments completed\n");
-	save_output_to_file("serial_output.csv", all_elapsed_times, no_of_experiments);
+	save_output_to_file("serial_output.csv", all_elapsed_times, NO_OF_EXPERIMENTS);
 	printf("Time statistics were saved to serial_output.csv\n");
 
 	return 0;

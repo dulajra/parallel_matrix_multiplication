@@ -1,26 +1,11 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
+#include "utils.h"
+
 #define ARG_COUNT 2
-#define MAX_MATRIX_ITEM 1000
-
-#define MATRIX_SIZE_INITIAL 200
-#define MATRIX_SIZE_MAX 2000
-#define MATRIX_SIZE_STEP 200
-#define NO_OF_EXPERIMENTS (MATRIX_SIZE_MAX - MATRIX_SIZE_INITIAL)/MATRIX_SIZE_STEP + 1
-
-double ** init_matrix(int n);
-
-void populate_matrix_randomly(double ** matrix, int n);
-
-void clean_matrix_memory(double ** metrix, int n);
-
-void print_matrix(char * name, double** matrix, int size);
 
 double ** multiply(double ** matrix_a, double ** matrix_b, int n);
-
-void save_output_to_file(char * file_name, double * data, int no_of_items_in_data);
 
 int main(int argc, char const *argv[])
 {
@@ -62,67 +47,20 @@ int main(int argc, char const *argv[])
 		elapsed_time /= sample_size;
 		all_elapsed_times[j++] = elapsed_time;
 
+
+		printf("Experiment for matrix size %d completed\n", n);
+		printf("Average time: %.4f\n\n", elapsed_time);
+
 		clean_matrix_memory(matrix_a, n);
 		clean_matrix_memory(matrix_b, n);
 		clean_matrix_memory(matrix_c, n);
-
-		printf("Experiment for matrix size %d completed\n", n);
-		printf("Average time: %.3f\n\n", elapsed_time);
-
 	}
 
 	printf("All experiments completed\n");
-	save_output_to_file("serial_output.csv", all_elapsed_times, NO_OF_EXPERIMENTS);
+	save_output_to_file("out/serial_output.csv", all_elapsed_times, NO_OF_EXPERIMENTS);
 	printf("Time statistics were saved to serial_output.csv\n");
 
 	return 0;
-}
-
-double ** init_matrix(int n){
-	int i;
-	double ** matrix;
-
-	matrix = (double **) malloc(sizeof(double *) * n);
-
-	for (i = 0; i < n; i++) {
-	    matrix[i] = (double *) malloc(sizeof(double) * n);
-	}
-
-	return matrix;
-}
-
-void clean_matrix_memory(double ** matrix, int n){
-	int i;
-
-	for(i=0; i < n; i++){
-		free(matrix[i]);
-	}
-
-	free(matrix);
-
-}
-
-void populate_matrix_randomly(double ** matrix, int n){
-	int i, j;
-
-	for (i=0; i < n; i++){
-		for (j=0; j < n; j++){
-			matrix[i][j] = (double)rand() / RAND_MAX * MAX_MATRIX_ITEM;
-		}
-	}
-}
-
-void print_matrix(char * name, double** matrix, int size){
-	int i, j;
-
-	printf("%s\n", name);
-
-	for (i=0; i < size; i++){
-		for (j=0; j < size; j++){
-			printf("%.3f\t", matrix[i][j]);
-		}
-		printf("\n");
-	}
 }
 
 double ** multiply(double ** matrix_a, double ** matrix_b, int n){
@@ -142,18 +80,4 @@ double ** multiply(double ** matrix_a, double ** matrix_b, int n){
 	}
 
 	return matrix_c;
-}
-
-void save_output_to_file(char * file_name, double * data, int no_of_items_in_data){
-	FILE *f = fopen(file_name, "w");
-	int i;
-
-	if(f == NULL) { 
-		perror("Cannot write results to output file"); 
-		exit(1); 
-	}
-
-	for(i = 0; i < no_of_items_in_data; i++){
-		fprintf(f, "%d, %.4f\n", (i+1) * MATRIX_SIZE_STEP, data[i]);  
-	}
 }

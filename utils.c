@@ -47,37 +47,25 @@ void print_matrix(char * name, double** matrix, int size){
 	}
 }
 
-// void save_output_to_file(char * file_name, double * data, int size){
-// 	FILE *f = fopen(file_name, "w");
-// 	int i;
-
-// 	if(f == NULL) { 
-// 		perror("Cannot write results to output file"); 
-// 		exit(1); 
-// 	}
-
-// 	fprintf(f, "Matrix size, Average Time\n");  
-
-// 	for(i = 0; i < size; i++){
-// 		fprintf(f, "%d, %.4f\n", (i+1) * MATRIX_SIZE_STEP, data[i]);  
-// 	}
-
-// 	fclose(f);
-// }
-
-void save_output_to_file(char * file_name, double ** data, int size){
+void save_output_to_file(char * file_name, double ** data, char ** column_names, int rows, int columns){
 	FILE *f = fopen(file_name, "w");
-	int i, j;
 
 	if(f == NULL) { 
 		perror("Cannot write results to output file"); 
 		exit(1); 
 	}
 
-	fprintf(f, "Matrix size, Average Time, SD, No of samples\n");  
+	for (int i = 0; i < columns ; ++i){
+		fprintf(f, "%s, ", column_names[i]);  
+	}
 
-	for(i = 0; i < size; i++){
-		fprintf(f, "%.0f, %.4f, %.4f, %.4f\n", data[i][0], data[i][1], data[i][2], data[i][3]);  
+	fprintf(f, "\n");  
+
+	for(int i = 0; i < rows; i++){
+		for (int j = 0; j < columns; j++){
+			fprintf(f, "%.4f, ", data[i][j]);
+		}
+		fprintf(f, "\n");  
 	}
 
 	fclose(f);
@@ -179,7 +167,7 @@ double ** run(char type, int sample_size){
 
 		}
 
-		printf("Completed\n\n");
+		printf("Experiment for matrix size %d completed\n\n", n);
 	}
 
 	return results;

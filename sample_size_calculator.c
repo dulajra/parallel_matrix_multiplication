@@ -13,6 +13,7 @@ int no_of_threads;
 const int sample_size = 50;
 const double confidence = 1.96; // 95%
 const int accuracy = 5; // 5%
+char * column_names[] = {"Matrix size", "Average Time", "SD", "No of samples"};
 
 int main(int argc, char const *argv[])
 {	
@@ -54,7 +55,7 @@ int main(int argc, char const *argv[])
 		standard_deviation = sqrt(variance/(sample_size - 1));
 		required_sample_size = pow(100 * confidence * standard_deviation / accuracy /avg_time, 2);
 
-		data[n][0] = n;
+		data[n][0] = (n+1) * MATRIX_SIZE_STEP;
 		data[n][1] = avg_time;
 		data[n][2] = standard_deviation;
 		data[n][3] = required_sample_size;
@@ -67,10 +68,10 @@ int main(int argc, char const *argv[])
 
 	switch(type){
 		case 's':
-			save_output_to_file("out/sample_sizes_serial.csv", data, NO_OF_EXPERIMENTS);
+			save_output_to_file("out/sample_sizes_serial.csv", data, column_names, NO_OF_EXPERIMENTS, 4);
 			break;
 		case 'p':
-			save_output_to_file("out/sample_sizes_parallel.csv", data, NO_OF_EXPERIMENTS);	
+			save_output_to_file("out/sample_sizes_parallel.csv", data, column_names, NO_OF_EXPERIMENTS, 4);	
 			break;
 
 	}

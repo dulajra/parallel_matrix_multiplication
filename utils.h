@@ -5,7 +5,7 @@
 #define MAX_MATRIX_ITEM 1000
 
 #define MATRIX_SIZE_INITIAL 200
-#define MATRIX_SIZE_MAX 400
+#define MATRIX_SIZE_MAX 2000
 #define MATRIX_SIZE_STEP 200
 #define NO_OF_EXPERIMENTS (MATRIX_SIZE_MAX - MATRIX_SIZE_INITIAL)/MATRIX_SIZE_STEP + 1
 
@@ -17,9 +17,7 @@ void clean_matrix_memory(double ** metrix, int n);
 
 void print_matrix(char * name, double** matrix, int size);
 
-// void save_output_to_file(char * file_name, double * data, int size);
-
-void save_output_to_file(char * file_name, double ** data, int size);
+void save_output_to_file(char * file_name, double ** data, char ** column_names, int rows, int columns);
 
 double ** multiply_serial(double ** matrix_a, double ** matrix_b, int n);
 

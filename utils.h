@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "omp.h"
+
 #define MAX_MATRIX_ITEM 1000
 
 #define MATRIX_SIZE_INITIAL 200

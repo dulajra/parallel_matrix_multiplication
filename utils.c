@@ -110,7 +110,8 @@ double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 
 double ** run(char type, int sample_size){
 	double ** matrix_a, ** matrix_b, ** matrix_c, ** results;
-	clock_t start, end;
+	// clock_t start, end;
+	struct timeval start, end;
 
 	results = (double **)malloc(sizeof(double *) * NO_OF_EXPERIMENTS);
 	for (int i = 0; i < NO_OF_EXPERIMENTS; i++){
@@ -131,11 +132,14 @@ double ** run(char type, int sample_size){
 					populate_matrix_randomly(matrix_a, n);
 					populate_matrix_randomly(matrix_b, n);
 
-					start = clock();
+					// start = clock();
+					gettimeofday(&start, NULL);
 					matrix_c = multiply_serial(matrix_a, matrix_b, n);
-					end = clock();
+					// end = clock();
+					gettimeofday(&end, NULL);
 
-					results[n/200 -1][i] = (end - start)/(double)CLOCKS_PER_SEC;
+					// results[n/200 -1][i] = (end - start)/(double)CLOCKS_PER_SEC;
+					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with ms accuracy
 
 					clean_matrix_memory(matrix_a, n);
 					clean_matrix_memory(matrix_b, n);
@@ -152,11 +156,14 @@ double ** run(char type, int sample_size){
 					populate_matrix_randomly(matrix_a, n);
 					populate_matrix_randomly(matrix_b, n);
 
-					start = clock();
+					// start = clock();
+					gettimeofday(&start, NULL);
 					matrix_c = multiply_parallel(matrix_a, matrix_b, n);
-					end = clock();
+					// end = clock();
+					gettimeofday(&end, NULL);
 
-					results[n/200 -1][i] = (end - start)/(double)CLOCKS_PER_SEC;
+					// results[n/200 -1][i] = (end - start)/(double)CLOCKS_PER_SEC;
+					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with ms accuracy
 
 					clean_matrix_memory(matrix_a, n);
 					clean_matrix_memory(matrix_b, n);

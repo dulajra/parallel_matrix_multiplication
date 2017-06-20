@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <time.h>
 #include <math.h>
 
 #include "utils.h"
@@ -10,7 +9,7 @@ double ** multiply(double ** matrix_a, double ** matrix_b, int n);
 
 int no_of_threads;
 
-const int sample_size = 50;
+const int sample_size = 100;
 const double confidence = 1.96; // 95%
 const int accuracy = 5; // 5%
 char * column_names[] = {"Matrix size", "Average Time", "SD", "No of samples"};
@@ -35,8 +34,8 @@ int main(int argc, char const *argv[])
 	results = run(type, sample_size);
 
 	data = (double **)malloc(sizeof(double *) * NO_OF_EXPERIMENTS);
-	for (int i = 0; i < 4; i++){
-		data[i] = (double *)malloc(sizeof(double) * sample_size);
+	for (int i = 0; i < NO_OF_EXPERIMENTS; i++){
+		data[i] = (double *)malloc(sizeof(double) * 4);
 	}
 
 	for (int n = 0;n < NO_OF_EXPERIMENTS; n++){

@@ -93,15 +93,18 @@ double ** multiply_serial(double ** matrix_a, double ** matrix_b, int n){
 double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 	int i, j, k;
 	double ** matrix_c;
+	double sum;
 
 	matrix_c = init_matrix(n);
 
-	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k)
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum)
 	for (i=0; i < n; i++){
 		for (j=0; j < n; j++){
+			sum = 0;
 			for(k=0; k < n;k++){
-				matrix_c[i][j] += matrix_a[i][k] * matrix_b[k][j];
+				sum += matrix_a[i][k] * matrix_b[k][j];
 			}
+			matrix_c[i][j] = sum;
 		}
 	}
 

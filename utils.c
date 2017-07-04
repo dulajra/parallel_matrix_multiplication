@@ -112,24 +112,30 @@ double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 }
 
 double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n){
-	int i, j, k;
+	int i, j, k, part;
 	double ** matrix_c;
 	double sum;
 
 	matrix_c = init_matrix(n);
+	// omp_init_lock(&writelock);
 
-	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum) num_threads(4)
-	for (i=0; i < n; i++){
-		// #pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(j, k, sum) num_threads(8)
-		for (j=0; j < n; j++){
-			sum = 0;
-			for(k=0; k < n; k++){
-				sum += matrix_a[i][k] * matrix_b[k][j];
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum)
+	for (part = 0; part < 8; part++) {
+		for (i=0; i < n; i++){
+			for (j=0; j < n; j++){
+				sum = 0;
+				// Partitioned columns of A
+				for(k=part*(n/8); k < (part+1)*(n/8); k++){
+					sum += matrix_a[i][k] * matrix_b[k][j];
+				}
+				
+				// #pragma omp critical
+				{
+					matrix_c[i][j] += sum;
+				}
 			}
-			matrix_c[i][j] = sum;
 		}
 	}
-
 	return matrix_c;
 }
 
@@ -146,6 +152,7 @@ double ** matrix_transpose(double ** matrix, int n) {
 }
 
 double ** run(char type, int sample_size){
+	printf("running function %c %d\n", type, sample_size);
 	double ** matrix_a, ** matrix_b, ** matrix_c, ** results;
 	// clock_t start, end;
 	struct timeval start, end;
@@ -159,7 +166,7 @@ double ** run(char type, int sample_size){
 		printf("Running experiment for matrix size %d\n", n);
 		// Intializations
 		srand(time(NULL));
-
+		printf("just before switch\n");
 		switch(type){
 			case 's':
 				for(int i=0; i < sample_size; i++){
@@ -186,6 +193,7 @@ double ** run(char type, int sample_size){
 				break;
 
 			case 'p':
+				printf("running function parallel\n");
 				for(int i=0; i < sample_size; i++){
 					matrix_a =  init_matrix(n);
 					matrix_b =  init_matrix(n);
@@ -195,7 +203,32 @@ double ** run(char type, int sample_size){
 
 					// start = clock();
 					gettimeofday(&start, NULL);
-					matrix_c = multiply_parallel(matrix_a, matrix_b, n);
+					matrix_c = multiply_parallel_optimized(matrix_a, matrix_b, n);
+					// end = clock();
+					gettimeofday(&end, NULL);
+
+					// results[n/200 -1][i] = (end - start)/(double)CLOCKS_PER_SEC;
+					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with ms accuracy
+
+					clean_matrix_memory(matrix_a, n);
+					clean_matrix_memory(matrix_b, n);
+					clean_matrix_memory(matrix_c, n);
+				}
+
+				break;
+
+			case 'm':
+				printf("running function O ayyooo");
+				for(int i=0; i < sample_size; i++){
+					matrix_a =  init_matrix(n);
+					matrix_b =  init_matrix(n);
+				
+					populate_matrix_randomly(matrix_a, n);
+					populate_matrix_randomly(matrix_b, n);
+
+					// start = clock();
+					gettimeofday(&start, NULL);
+					matrix_c = multiply_parallel_optimized(matrix_a, matrix_b, n);
 					// end = clock();
 					gettimeofday(&end, NULL);
 

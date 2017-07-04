@@ -26,8 +26,8 @@ int main(int argc, char const *argv[])
 	sscanf(argv[1], "%c", &type);
 	sscanf(argv[2], "%d", &sample_size);
 
-	if(type != 's' && type != 'p'){
-		printf("Invalid type paramater. Valid types are s and p. s for serial and p for parallel");
+	if(type != 's' && type != 'p' && type != 'm'){
+		printf("Invalid type paramater. Valid types are s, p and o. s for serial, p for parallel and m for optimized\n");
 		exit(1);
 	}
 
@@ -76,6 +76,9 @@ int main(int argc, char const *argv[])
 			break;
 		case 'p':
 			save_output_to_file("out/sample_sizes_parallel.csv", data, column_names, NO_OF_EXPERIMENTS, 4);	
+			break;
+		case 'm':
+			save_output_to_file("out/sample_sizes_parallel_optimized.csv", data, column_names, NO_OF_EXPERIMENTS, 4);	
 			break;
 
 	}

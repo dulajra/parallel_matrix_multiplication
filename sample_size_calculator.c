@@ -7,9 +7,8 @@
 
 double ** multiply(double ** matrix_a, double ** matrix_b, int n);
 
-int no_of_threads;
+int sample_size;
 
-const int sample_size = 100;
 const double confidence = 1.96; // 95%
 const int accuracy = 5; // 5%
 char * column_names[] = {"Matrix size", "Average Time", "SD", "No of samples"};
@@ -20,14 +19,20 @@ int main(int argc, char const *argv[])
 	char type;
 
 	if(argc < ARG_COUNT){
-		printf("Invalid arguments. Correct form: ./<executable name> <algorithm_type (s or p)>\n");
+		printf("Invalid arguments. Correct form: ./<executable name> <algorithm_type (s or p)> <no_of_samples>\n");
 		exit(1);
 	}
 
 	sscanf(argv[1], "%c", &type);
+	sscanf(argv[2], "%d", &sample_size);
 
 	if(type != 's' && type != 'p'){
 		printf("Invalid type paramater. Valid types are s and p. s for serial and p for parallel");
+		exit(1);
+	}
+
+	if(sample_size < 1){
+		printf("Invalid sample_size. Sample size should be an integer greater than 0");
 		exit(1);
 	}
 

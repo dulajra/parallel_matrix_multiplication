@@ -101,7 +101,7 @@ double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 	for (i=0; i < n; i++){
 		for (j=0; j < n; j++){
 			sum = 0;
-			for(k=0; k < n;k++){
+			for(k=0; k < n; k++){
 				sum += matrix_a[i][k] * matrix_b[k][j];
 			}
 			matrix_c[i][j] = sum;
@@ -109,6 +109,40 @@ double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 	}
 
 	return matrix_c;
+}
+
+double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n){
+	int i, j, k;
+	double ** matrix_c;
+	double sum;
+
+	matrix_c = init_matrix(n);
+
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum) num_threads(4)
+	for (i=0; i < n; i++){
+		// #pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(j, k, sum) num_threads(8)
+		for (j=0; j < n; j++){
+			sum = 0;
+			for(k=0; k < n; k++){
+				sum += matrix_a[i][k] * matrix_b[k][j];
+			}
+			matrix_c[i][j] = sum;
+		}
+	}
+
+	return matrix_c;
+}
+
+double ** matrix_transpose(double ** matrix, int n) {
+	int i, j;
+	double temp;
+	for (int i = 0; i < n; i++){
+        for (int j = 0; j < i + 1; j++){
+            temp = matrix[i][j];
+            matrix[i][j] = matrix[j][i];
+            matrix[j][i] = temp;
+        }
+    }
 }
 
 double ** run(char type, int sample_size){
@@ -182,3 +216,4 @@ double ** run(char type, int sample_size){
 
 	return results;
 }
+

@@ -26,4 +26,6 @@ double ** multiply_serial(double ** matrix_a, double ** matrix_b, int n);
 
 double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n);
 
+double ** matrix_transpose(double ** matrix, int n);
+
 double ** run(char type, int sample_size);

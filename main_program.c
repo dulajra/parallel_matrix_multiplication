@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
 	char type;
 
 	if(argc < ARG_COUNT){
-		printf("Invalid arguments. Correct form: ./<executable name> <algorithm_type (s or p)> <no_of_samples>\n");
+		printf("Invalid arguments. Correct form: ./<executable name> <algorithm_type (s or p or m)> <no_of_samples>\n");
 		exit(1);
 	}
 
@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
 	sscanf(argv[2], "%d", &sample_size);
 
 	if(type != 's' && type != 'p' && type != 'm'){
-		printf("Invalid type paramater. Valid types are s, p and o. s for serial, p for parallel and m for optimized\n");
+		printf("Invalid type paramater. Valid types are s, p and m. s for serial, p for parallel and m for optimized\n");
 		exit(1);
 	}
 

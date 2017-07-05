@@ -164,7 +164,6 @@ double ** run(char type, int sample_size){
 		printf("Running experiment for matrix size %d\n", n);
 		// Intializations
 		srand(time(NULL));
-		printf("just before switch\n");
 		switch(type){
 			case 's':
 				for(int i=0; i < sample_size; i++){
@@ -191,7 +190,6 @@ double ** run(char type, int sample_size){
 				break;
 
 			case 'p':
-				printf("running function parallel\n");
 				for(int i=0; i < sample_size; i++){
 					matrix_a =  init_matrix(n);
 					matrix_b =  init_matrix(n);
@@ -216,7 +214,6 @@ double ** run(char type, int sample_size){
 				break;
 
 			case 'm':
-				printf("running function O ayyooo");
 				for(int i=0; i < sample_size; i++){
 					matrix_a =  init_matrix(n);
 					matrix_b =  init_matrix(n);

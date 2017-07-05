@@ -117,7 +117,7 @@ int min(int a, int b) {
 }
 
 double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n){
-	int i0, j0, k0, i, j, k, step = n/8,thread_count;
+	int i0, j0, k0, i, j, k, step, thread_count;
 	double ** matrix_c;
 	double sum, temp;
 
@@ -135,6 +135,7 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 
 	// Get optimal thread count
 	thread_count = min(8, n/100 > 0? n/100 : 1);
+	step = n/thread_count;
 	/*
 	reference: http://www.netlib.org/utk/papers/autoblock/node2.html
 	outermost for loop has always 8 iterations, 1 per thread. Therefore i,j combination for any

@@ -31,4 +31,4 @@ Parallel version
     
 Optimzie parallel version
 
-    ./bin/main_program.out op n
+    ./bin/main_program.out m n

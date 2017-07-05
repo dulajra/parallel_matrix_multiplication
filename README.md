@@ -17,14 +17,18 @@ Here we do our calculations such that performance results are within an accuracy
     gcc -o bin/main_program.out main_program.c utils.c -fopenmp -lm
 
 ### Run
+For all follwing commands,
+
+    n = sample_size
+    
 Serial version
 
-    ./bin/main_program.out s
+    ./bin/main_program.out s n
 
 Parallel version
 
-    ./bin/main_program.out p
+    ./bin/main_program.out p n
     
 Optimzie parallel version
 
-    ./bin/main_program.out op
+    ./bin/main_program.out op n

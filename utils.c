@@ -116,18 +116,15 @@ int min(int a, int b) {
 	return a < b ? a: b;
 }
 
-double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n){
-	int i0, j0, k0, i, j, k, step, thread_count;
+double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n, int thread_count){
+	int i0, j0, k0, i, j, k, step;
 	double ** matrix_c;
 	double sum, temp;
 
 	matrix_c = init_matrix(n);
 
-	// Get optimal thread count
-	#pragma omp parallel
-	thread_count = omp_get_num_threads();
 	step = n/thread_count;
-	
+
 	/*
 	reference: http://www.netlib.org/utk/papers/autoblock/node2.html
 	outermost for loop has always 8 iterations, 1 per thread. Therefore i,j combination for any
@@ -166,6 +163,7 @@ double ** matrix_transpose(double ** matrix, int n) {
 }
 
 double ** run(char type, int sample_size){
+	int thread_count;
 	double ** matrix_a, ** matrix_b, ** matrix_c, ** results;
 	// clock_t start, end;
 	struct timeval start, end;
@@ -228,6 +226,10 @@ double ** run(char type, int sample_size){
 				break;
 
 			case 'm':
+				// Get optimal thread count
+				#pragma omp parallel
+				thread_count = omp_get_num_threads();
+
 				for(int i=0; i < sample_size; i++){
 					matrix_a =  init_matrix(n);
 					matrix_b =  init_matrix(n);
@@ -237,7 +239,7 @@ double ** run(char type, int sample_size){
 
 					// start = clock();
 					gettimeofday(&start, NULL);
-					matrix_c = multiply_parallel_optimized(matrix_a, matrix_b, n);
+					matrix_c = multiply_parallel_optimized(matrix_a, matrix_b, n, thread_count);
 					// end = clock();
 					gettimeofday(&end, NULL);
 

@@ -122,7 +122,7 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 
 	matrix_c = init_matrix(n);
 
-	// get transpose of the matrix_b
+	// init matrix_c to 0
 	for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < i + 1; j++)

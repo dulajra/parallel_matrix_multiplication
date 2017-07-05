@@ -29,7 +29,7 @@ void populate_matrix_randomly(double ** matrix, int n){
 
 	for (i=0; i < n; i++){
 		for (j=0; j < n; j++){
-			matrix[i][j] = (double)rand() / RAND_MAX * MAX_MATRIX_ITEM;
+			matrix[i][j] = (double)rand() / RAND_MAX * MAX_MATRIX_ITEM;		
 		}
 	}
 }
@@ -111,31 +111,49 @@ double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 	return matrix_c;
 }
 
+int min(int a, int b) {
+	return a < b ? a: b;
+}
+
 double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n){
-	int i, j, k, part;
+	int i0, j0, k0, i, j, k, step = n/8;
 	double ** matrix_c;
-	double sum;
+	double sum, temp;
 
 	matrix_c = init_matrix(n);
-	// omp_init_lock(&writelock);
 
-	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum)
-	for (part = 0; part < 8; part++) {
-		for (i=0; i < n; i++){
-			for (j=0; j < n; j++){
-				sum = 0;
-				// Partitioned columns of A
-				for(k=part*(n/8); k < (part+1)*(n/8); k++){
-					sum += matrix_a[i][k] * matrix_b[k][j];
+	// get transpose of the matrix_b
+	for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < i + 1; j++)
+        {
+			matrix_c[i][j] = 0;
+			matrix_c[j][i] = 0;
+        }
+    }
+
+	/*
+	reference: http://www.netlib.org/utk/papers/autoblock/node2.html
+	outermost for loop has always 8 iterations, 1 per thread. Therefore i,j combination for any
+	thead will be unique making multiple writes possible 
+	*/
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum) schedule(static) num_threads(16)
+	for (i0 = 0; i0 < n; i0 = i0 + step) {
+		for (j0 = 0; j0 < n; j0 = j0 + step) {
+			for (k0 = 0; k0 < n; k0 = k0 + step) {
+				for (i=i0; i < min(i0+step,n); i++){
+					for (j=j0; j < min(j0+step,n); j++){
+						sum = 0;
+						for(k=k0; k < min(k0+step,n); k++){
+							sum += matrix_a[i][k] * matrix_b[k][j];
+						}
+						matrix_c[i][j] += sum;
+					}
 				}
-				
-				// #pragma omp critical
-				{
-					matrix_c[i][j] += sum;
-				}
-			}
-		}
+			}	
+		}	
 	}
+	
 	return matrix_c;
 }
 
@@ -152,7 +170,6 @@ double ** matrix_transpose(double ** matrix, int n) {
 }
 
 double ** run(char type, int sample_size){
-	printf("running function %c %d\n", type, sample_size);
 	double ** matrix_a, ** matrix_b, ** matrix_c, ** results;
 	// clock_t start, end;
 	struct timeval start, end;
@@ -163,10 +180,9 @@ double ** run(char type, int sample_size){
 	}
 
 	for(int n = MATRIX_SIZE_INITIAL; n <= MATRIX_SIZE_MAX; n += MATRIX_SIZE_STEP){
-		printf("Running experiment for matrix size %d\n", n);
 		// Intializations
 		srand(time(NULL));
-		printf("just before switch\n");
+		
 		switch(type){
 			case 's':
 				for(int i=0; i < sample_size; i++){
@@ -193,7 +209,7 @@ double ** run(char type, int sample_size){
 				break;
 
 			case 'p':
-				printf("running function parallel\n");
+				// printf("running function parallel\n");
 				for(int i=0; i < sample_size; i++){
 					matrix_a =  init_matrix(n);
 					matrix_b =  init_matrix(n);
@@ -203,7 +219,7 @@ double ** run(char type, int sample_size){
 
 					// start = clock();
 					gettimeofday(&start, NULL);
-					matrix_c = multiply_parallel_optimized(matrix_a, matrix_b, n);
+					matrix_c = multiply_parallel(matrix_a, matrix_b, n);
 					// end = clock();
 					gettimeofday(&end, NULL);
 
@@ -218,7 +234,6 @@ double ** run(char type, int sample_size){
 				break;
 
 			case 'm':
-				printf("running function O ayyooo");
 				for(int i=0; i < sample_size; i++){
 					matrix_a =  init_matrix(n);
 					matrix_b =  init_matrix(n);

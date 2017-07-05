@@ -98,7 +98,7 @@ double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 
 	matrix_c = init_matrix(n);
 
-	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum)
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum) num_threads(20)
 	for (i=0; i < n; i++){
 		for (j=0; j < n; j++){
 			sum = 0;

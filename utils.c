@@ -182,7 +182,10 @@ double ** run(char type, int sample_size){
 	for(int n = MATRIX_SIZE_INITIAL; n <= MATRIX_SIZE_MAX; n += MATRIX_SIZE_STEP){
 		// Intializations
 		srand(time(NULL));
+<<<<<<< HEAD
 		
+=======
+>>>>>>> 342500490ff1e455b095bd2ebfa9dd2a54c0bd9c
 		switch(type){
 			case 's':
 				for(int i=0; i < sample_size; i++){
@@ -209,7 +212,10 @@ double ** run(char type, int sample_size){
 				break;
 
 			case 'p':
+<<<<<<< HEAD
 				// printf("running function parallel\n");
+=======
+>>>>>>> 342500490ff1e455b095bd2ebfa9dd2a54c0bd9c
 				for(int i=0; i < sample_size; i++){
 					matrix_a =  init_matrix(n);
 					matrix_b =  init_matrix(n);

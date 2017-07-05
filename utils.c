@@ -123,19 +123,11 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 
 	matrix_c = init_matrix(n);
 
-	// init matrix_c to 0
-	for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < i + 1; j++)
-        {
-			matrix_c[i][j] = 0;
-			matrix_c[j][i] = 0;
-        }
-    }
-
 	// Get optimal thread count
-	thread_count = min(8, n/100 > 0? n/100 : 1);
+	#pragma omp parallel
+	thread_count = omp_get_num_threads();
 	step = n/thread_count;
+	
 	/*
 	reference: http://www.netlib.org/utk/papers/autoblock/node2.html
 	outermost for loop has always 8 iterations, 1 per thread. Therefore i,j combination for any

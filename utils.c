@@ -72,8 +72,9 @@ void save_output_to_file(char * file_name, double ** data, char ** column_names,
 }
 
 double ** multiply_serial(double ** matrix_a, double ** matrix_b, int n){
-	int i, j, k, sum;
+	int i, j, k;
 	double ** matrix_c;
+	double sum;
 
 	matrix_c = init_matrix(n);
 
@@ -116,7 +117,7 @@ int min(int a, int b) {
 }
 
 double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n){
-	int i0, j0, k0, i, j, k, step = n/8;
+	int i0, j0, k0, i, j, k, step = n/8,thread_count;
 	double ** matrix_c;
 	double sum, temp;
 
@@ -132,12 +133,14 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
         }
     }
 
+	// Get optimal thread count
+	thread_count = n/250 > 0? n/250 : 1;
 	/*
 	reference: http://www.netlib.org/utk/papers/autoblock/node2.html
 	outermost for loop has always 8 iterations, 1 per thread. Therefore i,j combination for any
 	thead will be unique making multiple writes possible 
 	*/
-	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum) schedule(static) num_threads(16)
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum) schedule(static) num_threads(thread_count)
 	for (i0 = 0; i0 < n; i0 = i0 + step) {
 		for (j0 = 0; j0 < n; j0 = j0 + step) {
 			for (k0 = 0; k0 < n; k0 = k0 + step) {

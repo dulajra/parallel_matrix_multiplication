@@ -116,13 +116,14 @@ int min(int a, int b) {
 	return a < b ? a: b;
 }
 
-double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n, int thread_count){
-	int i0, j0, k0, i, j, k, step;
+double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n){
+	int i0, j0, k0, i, j, k, thread_count, step;
 	double ** matrix_c;
 	double sum, temp;
 
 	matrix_c = init_matrix(n);
 
+	thread_count = 20;
 	step = n/thread_count;
 
 	/*
@@ -239,7 +240,7 @@ double ** run(char type, int sample_size){
 
 					// start = clock();
 					gettimeofday(&start, NULL);
-					matrix_c = multiply_parallel_optimized(matrix_a, matrix_b, n, thread_count);
+					matrix_c = multiply_parallel_optimized(matrix_a, matrix_b, n);
 					// end = clock();
 					gettimeofday(&end, NULL);
 

@@ -15,6 +15,9 @@ char * column_names[] = {"Matrix size", "Average Time", "SD", "No of samples"};
 
 int main(int argc, char const *argv[])
 {	
+	clock_t start, end;
+	start = clock();
+
 	double avg_time, variance, standard_deviation, required_sample_size, ** results, ** data;	
 	char type;
 
@@ -82,6 +85,9 @@ int main(int argc, char const *argv[])
 			break;
 
 	}
+
+	end = clock();
+	printf("%f seconds\n", (end - start)/(double)CLOCKS_PER_SEC);
 
 	return 0;
 }

@@ -117,7 +117,6 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 	double sum;
 
 	matrix_c = init_matrix(n);
-	// omp_init_lock(&writelock);
 
 	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum)
 	for (part = 0; part < 8; part++) {
@@ -129,7 +128,6 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 					sum += matrix_a[i][k] * matrix_b[k][j];
 				}
 				
-				// #pragma omp critical
 				{
 					matrix_c[i][j] += sum;
 				}

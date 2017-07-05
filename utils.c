@@ -134,7 +134,7 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
     }
 
 	// Get optimal thread count
-	thread_count = n/250 > 0? n/250 : 1;
+	thread_count = n/250 > 0 ? n/250 : 1;
 	/*
 	reference: http://www.netlib.org/utk/papers/autoblock/node2.html
 	outermost for loop has always 8 iterations, 1 per thread. Therefore i,j combination for any

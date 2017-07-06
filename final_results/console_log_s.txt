@@ -1,0 +1,69 @@
+Experiment for matrix size 200 completed
+
+Experiment for matrix size 400 completed
+
+Experiment for matrix size 600 completed
+
+Experiment for matrix size 800 completed
+
+Experiment for matrix size 1000 completed
+
+Experiment for matrix size 1200 completed
+
+Experiment for matrix size 1400 completed
+
+Experiment for matrix size 1600 completed
+
+Experiment for matrix size 1800 completed
+
+Experiment for matrix size 2000 completed
+
+Matrix size 200
+Average time: 0.0277
+Standard deviation: 0.0063
+Sample size: 80.2991
+
+Matrix size 400
+Average time: 0.2248
+Standard deviation: 0.0063
+Sample size: 1.2218
+
+Matrix size 600
+Average time: 0.8066
+Standard deviation: 0.0134
+Sample size: 0.4266
+
+Matrix size 800
+Average time: 2.5513
+Standard deviation: 0.0890
+Sample size: 1.8712
+
+Matrix size 1000
+Average time: 8.0230
+Standard deviation: 0.2889
+Sample size: 1.9923
+
+Matrix size 1200
+Average time: 16.6952
+Standard deviation: 0.3448
+Sample size: 0.6553
+
+Matrix size 1400
+Average time: 26.7609
+Standard deviation: 0.9273
+Sample size: 1.8449
+
+Matrix size 1600
+Average time: 40.9162
+Standard deviation: 1.9958
+Sample size: 3.6560
+
+Matrix size 1800
+Average time: 58.9642
+Standard deviation: 3.0730
+Sample size: 4.1736
+
+Matrix size 2000
+Average time: 82.2798
+Standard deviation: 5.6890
+Sample size: 7.3461

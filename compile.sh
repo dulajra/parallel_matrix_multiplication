@@ -1,0 +1,1 @@
+gcc -o bin/main_program.out main_program.c utils.c -fopenmp -lm

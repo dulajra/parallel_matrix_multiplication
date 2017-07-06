@@ -1,5 +1,6 @@
 #include "utils.h"
 
+// Allocate memory for a square matrix with given size.
 double ** init_matrix(int n){
 	int i;
 	double ** matrix;
@@ -13,6 +14,7 @@ double ** init_matrix(int n){
 	return matrix;
 }
 
+// Free the memory used by the given matrix.
 void clean_matrix_memory(double ** matrix, int n){
 	int i;
 
@@ -24,6 +26,7 @@ void clean_matrix_memory(double ** matrix, int n){
 
 }
 
+// File up the given matrix with random decimal values. Values can be between 0 - 1001. (MAX_MATRIX_ITEM + 1 = 1001)
 void populate_matrix_randomly(double ** matrix, int n){
 	int i, j;
 
@@ -34,6 +37,7 @@ void populate_matrix_randomly(double ** matrix, int n){
 	}
 }
 
+// Print the values of the given matrix to the console. 
 void print_matrix(char * name, double** matrix, int size){
 	int i, j;
 
@@ -47,6 +51,19 @@ void print_matrix(char * name, double** matrix, int size){
 	}
 }
 
+double ** matrix_transpose(double ** matrix, int n) {
+	int i, j;
+	double temp;
+	for (int i = 0; i < n; i++){
+        for (int j = 0; j < i + 1; j++){
+            temp = matrix[i][j];
+            matrix[i][j] = matrix[j][i];
+            matrix[j][i] = temp;
+        }
+    }
+}
+
+// Save the given data to a file in CSV format. 
 void save_output_to_file(char * file_name, double ** data, char ** column_names, int rows, int columns){
 	FILE *f = fopen(file_name, "w");
 
@@ -71,6 +88,12 @@ void save_output_to_file(char * file_name, double ** data, char ** column_names,
 	fclose(f);
 }
 
+// Return the minimum of given 2 numbers.
+int min(int a, int b) {
+	return a < b ? a: b;
+}
+
+// Multiply given 2 matrices in serial 
 double ** multiply_serial(double ** matrix_a, double ** matrix_b, int n){
 	int i, j, k;
 	double ** matrix_c;
@@ -91,6 +114,7 @@ double ** multiply_serial(double ** matrix_a, double ** matrix_b, int n){
 	return matrix_c;
 }
 
+// Multiply given 2 matrices using a openmp parale for loop. Same algorithm used in serial version is used here. 
 double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 	int i, j, k;
 	double ** matrix_c;
@@ -112,10 +136,7 @@ double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n){
 	return matrix_c;
 }
 
-int min(int a, int b) {
-	return a < b ? a: b;
-}
-
+// Multiply given 2 matrices using a tiling algorithm. 
 double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n){
 	int i0, j0, k0, i, j, k, thread_count, step;
 	double ** matrix_c;
@@ -151,17 +172,12 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 	return matrix_c;
 }
 
-double ** matrix_transpose(double ** matrix, int n) {
-	int i, j;
-	double temp;
-	for (int i = 0; i < n; i++){
-        for (int j = 0; j < i + 1; j++){
-            temp = matrix[i][j];
-            matrix[i][j] = matrix[j][i];
-            matrix[j][i] = temp;
-        }
-    }
-}
+/*
+Run the experiment using the given algorithm type and sample size. 
+Returns an 2D array of execution times. 
+Each row represents a matix size such as 200, 400, etc.
+Each column represents a sample. 
+*/
 
 double ** run(char type, int sample_size){
 	int thread_count;
@@ -169,14 +185,14 @@ double ** run(char type, int sample_size){
 	// clock_t start, end;
 	struct timeval start, end;
 
+	// Initialize results 2D array
 	results = (double **)malloc(sizeof(double *) * NO_OF_EXPERIMENTS);
 	for (int i = 0; i < NO_OF_EXPERIMENTS; i++){
 		results[i] = (double *)malloc(sizeof(double) * sample_size);
 	}
 
 	for(int n = MATRIX_SIZE_INITIAL; n <= MATRIX_SIZE_MAX; n += MATRIX_SIZE_STEP){
-		// Intializations
-		srand(time(NULL));
+		srand(time(NULL)); // Set a different seed for each experiment to generate random numbers. 
 		switch(type){
 			case 's':
 				for(int i=0; i < sample_size; i++){
@@ -193,7 +209,7 @@ double ** run(char type, int sample_size){
 					gettimeofday(&end, NULL);
 
 					// results[n/200 -1][i] = (end - start)/(double)CLOCKS_PER_SEC;
-					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with ms accuracy
+					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with micro seconds accuracy
 
 					clean_matrix_memory(matrix_a, n);
 					clean_matrix_memory(matrix_b, n);
@@ -217,7 +233,7 @@ double ** run(char type, int sample_size){
 					gettimeofday(&end, NULL);
 
 					// results[n/200 -1][i] = (end - start)/(double)CLOCKS_PER_SEC;
-					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with ms accuracy
+					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with micro seconds accuracy
 
 					clean_matrix_memory(matrix_a, n);
 					clean_matrix_memory(matrix_b, n);
@@ -227,10 +243,6 @@ double ** run(char type, int sample_size){
 				break;
 
 			case 'm':
-				// Get optimal thread count
-				#pragma omp parallel
-				thread_count = omp_get_num_threads();
-
 				for(int i=0; i < sample_size; i++){
 					matrix_a =  init_matrix(n);
 					matrix_b =  init_matrix(n);
@@ -245,7 +257,7 @@ double ** run(char type, int sample_size){
 					gettimeofday(&end, NULL);
 
 					// results[n/200 -1][i] = (end - start)/(double)CLOCKS_PER_SEC;
-					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with ms accuracy
+					results[n/200 -1][i] = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with micro seconds accuracy
 
 					clean_matrix_memory(matrix_a, n);
 					clean_matrix_memory(matrix_b, n);

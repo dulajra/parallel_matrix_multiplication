@@ -15,12 +15,10 @@ char * column_names[] = {"Matrix size", "Average Time", "SD", "No of samples"};
 
 int main(int argc, char const *argv[])
 {	
-	clock_t start, end;
-	start = clock();
-
 	double avg_time, variance, standard_deviation, required_sample_size, ** results, ** data;	
 	char type;
 
+	// Validate the inputs
 	if(argc < ARG_COUNT){
 		printf("Invalid arguments. Correct form: ./<executable name> <algorithm_type (s or p or m)> <no_of_samples>\n");
 		exit(1);
@@ -39,13 +37,16 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
+	// Start the experiment with given algorithm type and number of samples. 
 	results = run(type, sample_size);
 
+	// Allcate memeory to store calculation results. 
 	data = (double **)malloc(sizeof(double *) * NO_OF_EXPERIMENTS);
 	for (int i = 0; i < NO_OF_EXPERIMENTS; i++){
 		data[i] = (double *)malloc(sizeof(double) * 4);
 	}
 
+	// Calcuate mean, standard deviation and required minimum sample size for each matriz size. 
 	for (int n = 0;n < NO_OF_EXPERIMENTS; n++){
 		avg_time = 0;
 
@@ -59,7 +60,7 @@ int main(int argc, char const *argv[])
 			variance += pow(results[n][i] - avg_time, 2);
 		}
 
-		standard_deviation = sqrt(variance/(sample_size - 1));
+		standard_deviation = sqrt(variance/(sample_size - 1)); // Here we divide by (sample_size - 1) as we find the standard deviation of the sample. Not of the population. 
 		required_sample_size = pow(100 * confidence * standard_deviation / accuracy /avg_time, 2);
 
 		data[n][0] = (n+1) * MATRIX_SIZE_STEP;
@@ -73,6 +74,7 @@ int main(int argc, char const *argv[])
 		printf("Sample size: %.4f\n\n", data[n][3]);
 	}
 
+	// Write final results to a file in CSV format. 
 	switch(type){
 		case 's':
 			save_output_to_file("out/sample_sizes_serial.csv", data, column_names, NO_OF_EXPERIMENTS, 4);
@@ -85,9 +87,6 @@ int main(int argc, char const *argv[])
 			break;
 
 	}
-
-	end = clock();
-	printf("%f seconds\n", (end - start)/(double)CLOCKS_PER_SEC);
 
 	return 0;
 }

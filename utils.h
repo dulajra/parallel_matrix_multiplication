@@ -20,14 +20,16 @@ void clean_matrix_memory(double ** metrix, int n);
 
 void print_matrix(char * name, double** matrix, int size);
 
+double ** matrix_transpose(double ** matrix, int n);
+
 void save_output_to_file(char * file_name, double ** data, char ** column_names, int rows, int columns);
+
+int min(int a, int b);
 
 double ** multiply_serial(double ** matrix_a, double ** matrix_b, int n);
 
 double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n);
 
 double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n);
-
-double ** matrix_transpose(double ** matrix, int n);
 
 double ** run(char type, int sample_size);

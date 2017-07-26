@@ -37,6 +37,17 @@ void populate_matrix_randomly(double ** matrix, int n){
 	}
 }
 
+void populateZeroMatrix(double ** matrix, int n) {
+	int i,j;
+	#pragma omp parallel for num_threads(20) private(j)
+	for (i=0; i < n; i++){
+		for (j=0; j < i; j++){
+			matrix[i][j] = 0;		
+			matrix[j][i] = 0;		
+		}
+	}
+}
+
 // Print the values of the given matrix to the console. 
 void print_matrix(char * name, double** matrix, int size){
 	int i, j;
@@ -49,18 +60,6 @@ void print_matrix(char * name, double** matrix, int size){
 		}
 		printf("\n");
 	}
-}
-
-double ** matrix_transpose(double ** matrix, int n) {
-	int i, j;
-	double temp;
-	for (int i = 0; i < n; i++){
-        for (int j = 0; j < i + 1; j++){
-            temp = matrix[i][j];
-            matrix[i][j] = matrix[j][i];
-            matrix[j][i] = temp;
-        }
-    }
 }
 
 // Save the given data to a file in CSV format. 
@@ -143,6 +142,7 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 	double sum, temp;
 
 	matrix_c = init_matrix(n);
+	populateZeroMatrix(matrix_c, n);
 
 	thread_count = 20;
 	step = n/thread_count;
@@ -174,19 +174,34 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 
 double ** multiply_parallel_transpose(double ** matrix_a, double ** matrix_b, int n){
 	double ** matrix_c;
-	double sum;
+	double * row_b, * row_c, * row_a;
+	double sum, a;
+	int i, j, k;
 
 	matrix_c = init_matrix(n);
 
-	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c)
-	for (int i=0; i < n; i++){
-		for (int j=0; j < n; j++){
-			for(int k=0; k < n; k++){
-				matrix_c[i][k] += matrix_a[i][j] * matrix_b[j][k];
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, row_b, row_c, row_a, a) num_threads(20) schedule(static)
+	for (i=0; i < n; i++){
+		row_c = matrix_c[i];
+		row_a = matrix_a[i];
+		for (j=0; j < n; j++){
+			a = row_a[j];
+			row_b = matrix_b[j];
+			for(k=0; k < n; k+=10){
+				row_c[k] += a * row_b[k];
+				row_c[k+1] += a * row_b[k+1];
+				row_c[k+2] += a * row_b[k+2];
+				row_c[k+3] += a * row_b[k+3];
+				row_c[k+4] += a * row_b[k+4];
+
+				row_c[k+5] += a * row_b[k+5];
+				row_c[k+6] += a * row_b[k+6];
+				row_c[k+7] += a * row_b[k+7];
+				row_c[k+8] += a * row_b[k+8];
+				row_c[k+9] += a * row_b[k+9];
 			}
 		}
 	}
-
 	return matrix_c;
 }
 

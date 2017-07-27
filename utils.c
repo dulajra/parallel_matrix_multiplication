@@ -37,7 +37,7 @@ void populate_matrix_randomly(double ** matrix, int n){
 	}
 }
 
-void populateZeroMatrix(double ** matrix, int n) {
+void populate_zero_matrix(double ** matrix, int n) {
 	int i,j;
 	#pragma omp parallel for num_threads(20) private(j)
 	for (i=0; i < n; i++){
@@ -142,7 +142,6 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 	double sum, temp;
 
 	matrix_c = init_matrix(n);
-	populateZeroMatrix(matrix_c, n);
 
 	thread_count = 20;
 	step = n/thread_count;
@@ -152,7 +151,7 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 	outermost for loop has always 8 iterations, 1 per thread. Therefore i,j combination for any
 	thead will be unique making multiple writes possible 
 	*/
-	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, sum) schedule(static) num_threads(thread_count)
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(j0, k0, i, j, k, sum) schedule(static) num_threads(thread_count)
 	for (i0 = 0; i0 < n; i0 = i0 + step) {
 		for (j0 = 0; j0 < n; j0 = j0 + step) {
 			for (k0 = 0; k0 < n; k0 = k0 + step) {
@@ -172,13 +171,10 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 	return matrix_c;
 }
 
-double ** multiply_parallel_transpose(double ** matrix_a, double ** matrix_b, int n){
-	double ** matrix_c;
+double ** multiply_parallel_transpose(double ** matrix_a, double ** matrix_b, double ** matrix_c, int n){
 	double * row_b, * row_c, * row_a;
 	double sum, a;
 	int i, j, k;
-
-	matrix_c = init_matrix(n);
 
 	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c) private(i, j, k, row_b, row_c, row_a, a) num_threads(20) schedule(static)
 	for (i=0; i < n; i++){
@@ -290,7 +286,9 @@ double ** run(char type, int sample_size){
 
 					// start = clock();
 					gettimeofday(&start, NULL);
-					matrix_c = multiply_parallel_transpose(matrix_a, matrix_b, n);
+					double** matrix_c = init_matrix(n);
+					populate_zero_matrix(matrix_c, n);
+					matrix_c = multiply_parallel_transpose(matrix_a, matrix_b, matrix_c, n);
 					// end = clock();
 					gettimeofday(&end, NULL);
 

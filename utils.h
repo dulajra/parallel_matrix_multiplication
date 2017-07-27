@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 #include <time.h>
 #include <sys/time.h>
 
@@ -33,3 +34,5 @@ double ** multiply_parallel(double ** matrix_a, double ** matrix_b, int n);
 double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, int n);
 
 double ** run(char type, int sample_size);
+
+void populate_zero_matrix(double ** matrix, int n);

@@ -172,12 +172,35 @@ double ** multiply_parallel_optimized(double ** matrix_a, double ** matrix_b, in
 	return matrix_c;
 }
 
-/*
-Run the experiment using the given algorithm type and sample size. 
-Returns an 2D array of execution times. 
-Each row represents a matix size such as 200, 400, etc.
-Each column represents a sample. 
-*/
+double ** multiply_parallel_transpose(double ** matrix_a, double ** matrix_b, int n){
+	double ** matrix_c;
+	double sum;
+
+	matrix_c = init_matrix(n);
+
+	#pragma omp parallel for shared(matrix_a,  matrix_b, matrix_c)
+	for (int i=0; i < n; i++){
+		for (int j=0; j < n; j++){
+			for(int k=0; k < n; k++){
+				matrix_c[i][k] += matrix_a[i][j] * matrix_b[j][k];
+			}
+		}
+	}
+
+	return matrix_c;
+}
+
+double ** matrix_transpose(double ** matrix, int n) {
+	int i, j;
+	double temp;
+	for (int i = 0; i < n; i++){
+        for (int j = 0; j < i + 1; j++){
+            temp = matrix[i][j];
+            matrix[i][j] = matrix[j][i];
+            matrix[j][i] = temp;
+        }
+    }
+}
 
 double ** run(char type, int sample_size){
 	int thread_count;
@@ -252,7 +275,7 @@ double ** run(char type, int sample_size){
 
 					// start = clock();
 					gettimeofday(&start, NULL);
-					matrix_c = multiply_parallel_optimized(matrix_a, matrix_b, n);
+					matrix_c = multiply_parallel_transpose(matrix_a, matrix_b, n);
 					// end = clock();
 					gettimeofday(&end, NULL);
 
@@ -274,3 +297,29 @@ double ** run(char type, int sample_size){
 	return results;
 }
 
+/*int main(){
+	int n = 5;
+	double ** matrix_a, ** matrix_b, ** matrix_c;
+	struct timeval start, end;
+
+	matrix_a =  init_matrix(n);
+	matrix_b =  init_matrix(n);
+
+	populate_matrix_randomly(matrix_a, n);
+	populate_matrix_randomly(matrix_b, n);
+
+	gettimeofday(&start, NULL);
+	matrix_c = multiply_parallel_transpose(matrix_a, matrix_b, n);
+	gettimeofday(&end, NULL);
+
+	double ** matrix_cs = multiply_serial(matrix_a, matrix_b, n);
+
+	print_matrix("Opt", matrix_c, n);
+	print_matrix("Serial", matrix_cs, n);
+
+	double time = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / (double)1000000; // seconds with ms accuracy
+
+	printf("Time: %f\n", time);
+
+	return 0;
+}*/
